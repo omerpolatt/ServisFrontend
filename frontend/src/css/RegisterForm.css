@@ -1,0 +1,74 @@
+.register-page {
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: none; /* Arka plan rengini kaldırıyoruz */
+    padding: 20px;
+  }
+  
+  .register-container {
+    background-color: #fff; /* Sadece beyaz arka plan */
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Daha belirgin bir gölge */
+    text-align: center;
+    transition: box-shadow 0.3s ease; /* Gölge geçişi yumuşatılıyor */
+  }
+  
+  .register-container:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); /* Hover durumunda gölge arttırılıyor */
+  }
+  
+  /* Input alanları ve ikon container */
+  .input-icon-container {
+    position: relative;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 14px 20px 14px 45px; /* Simge için sol tarafta ekstra padding */
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  .input-field:focus {
+    border-color: #42a5f5; /* Focus durumunda kenarlık rengi */
+    background-color: #fff; /* Focus durumunda arka plan tam beyaz */
+  }
+  
+  /* Input alanı içindeki simgeler */
+  .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 18px;
+  }
+  
+  .register-button {
+    background: linear-gradient(45deg, #42a5f5, #478ed1);
+    border: none;
+    padding: 12px;
+    color: white;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .register-button:hover {
+    background-color: #3a6ea5; /* Hover durumunda düğme rengi */
+  }
+  

@@ -1,0 +1,192 @@
+/* Arka planı ve formun ortalanmasını sağlıyoruz */
+.login-page {
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #4e54c8, #8f94fb); /* Login için gradient arka plan */
+    padding: 20px;
+  }
+  
+  /* Form kartı */
+  .login-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2); /* Daha belirgin gölge */
+    text-align: center;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  
+  /* Başlık */
+  .login-container h2 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  
+ /* Input alanları */
+.input-container {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%; /* Container'ın tamamını kaplar */
+  }
+  
+  input {
+    width: 100%; /* Input alanı container'ın genişliğini tam kaplar */
+    padding: 14px 20px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box; /* Taşmayı engellemek için */
+  }
+  
+  input:focus {
+    border-color: #4e54c8; /* Focus olduğunda mor kenarlık */
+    background-color: #fff; /* Focus olduğunda arka plan beyazlaşır */
+  }
+  
+  .password-container {
+    position: relative;
+  }
+  
+  .password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+  }
+  
+  .password-toggle:hover {
+    color: #555;
+  }
+  
+  /* Remember Me & Forgot Password */
+  .options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  
+  .forgot-password {
+    color: #4e54c8;
+  }
+  
+  .forgot-password:hover {
+    text-decoration: underline;
+  }
+  
+  /* Sign In Button */
+  .login-button {
+    background: linear-gradient(45deg, #4e54c8, #8f94fb);
+    border: none;
+    padding: 12px;
+    color: white;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 10px rgba(78, 84, 200, 0.3);
+    margin-top: 15px;
+  }
+  
+  .login-button:hover {
+    background-color: #3e48a7;
+  }
+  
+  /* Separator Text */
+  .separator {
+    font-size: 12px;
+    color: #333;
+    margin: 20px 0;
+    position: relative;
+  }
+  
+  .separator::before,
+  .separator::after {
+    content: '';
+    width: 40%;
+    height: 1px;
+    background-color: #ddd;
+    position: absolute;
+    top: 50%;
+  }
+  
+  .separator::before {
+    left: 0;
+  }
+  
+  .separator::after {
+    right: 0;
+  }
+  
+  .social-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .circle-button {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Butonları yuvarlak yapar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .circle-button:hover {
+    transform: translateY(-3px);
+  }
+  
+  /* Facebook Butonu */
+  .facebook-button {
+    background-color: #3b5998;
+    color: white;
+  }
+  
+  .facebook-button:hover {
+    background-color: #2d4373;
+  }
+  
+  /* Twitter Butonu */
+  .twitter-button {
+    background-color: #1da1f2;
+    color: white;
+  }
+  
+  .twitter-button:hover {
+    background-color: #1a91da;
+  }
+  
+  /* Google Butonu */
+  .google-button {
+    background-color: #db4437;
+    color: white;
+  }
+  
+  .google-button:hover {
+    background-color: #c23321;
+  }

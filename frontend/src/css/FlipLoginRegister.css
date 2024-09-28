@@ -1,0 +1,53 @@
+.flip-container {
+    perspective: 1000px;
+    width: 500px;
+    height: 550px; /* Sabit bir yükseklik veriyoruz */
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .card {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    position: relative;
+  }
+  
+  .card.flipped {
+    transform: rotateY(180deg);
+  }
+  
+  .front, .back {
+    backface-visibility: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .back {
+    transform: rotateY(180deg);
+  }
+  
+  .form-toggle-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #478ed1;
+    color: white;
+    cursor: pointer;
+    border-radius: 30px;
+  }
+  
