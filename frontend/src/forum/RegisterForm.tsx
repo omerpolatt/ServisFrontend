@@ -3,6 +3,8 @@ import { useRegisterStore } from '../stores/RegisterStore';
 import '../css/RegisterForm.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; 
+import { toast, ToastContainer } from 'react-toastify'; // Toastify import edildi
+import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS'i import edildi
 
 const RegisterForm: React.FC = () => {
   const { register, sendVerificationCode, verifyCode, verificationCodeSent, isVerified } = useRegisterStore(); 
@@ -27,9 +29,19 @@ const RegisterForm: React.FC = () => {
     } else {
       console.log("Kayıt işlemi yapılıyor:", formData);
       await register(formData);
+
+      // Kayıt başarılı olduğunda toast mesajı göster
+      toast.success('Kayıt başarılı! Hoşgeldiniz.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
-  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword); 
@@ -37,10 +49,10 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div className="register-page">
+      <ToastContainer /> {/* Toast bileşeni burada */}
       <div className="register-container">
         <h2>Create an Account</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* E-posta alanı: Doğrulama kodu gönderilmemişse göster */}
           {!verificationCodeSent && (
             <div className="input-icon-container">
               <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
@@ -55,7 +67,6 @@ const RegisterForm: React.FC = () => {
             </div>
           )}
 
-          {/* Doğrulama kodu gönderildiyse ve henüz doğrulanmadıysa kod girişi yap */}
           {verificationCodeSent && !isVerified && (
             <div className="input-icon-container">
               <input
@@ -69,7 +80,6 @@ const RegisterForm: React.FC = () => {
             </div>
           )}
 
-          {/* Doğrulama kodu doğruysa kullanıcı adı ve şifre girişi yap */}
           {isVerified && (
             <>
               <div className="input-icon-container">
