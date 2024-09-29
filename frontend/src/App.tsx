@@ -5,7 +5,8 @@ import FlipLoginRegister from './components/FlipLoginRegister';  // FlipLoginReg
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AccessControl from './components/AccessControl'; // AccessControl bileşeni
-import TaskForm from './forum/TaskForm';
+import GalleryPage from './pages/GalleryPage';
+
 
 const App: React.FC = () => {
   return (
@@ -18,9 +19,9 @@ const App: React.FC = () => {
             path="/anasayfa"
             element={<AccessControl element={<HomePage />} />} // HomePage için erişim kontrolü
           />
-          <Route
-            path="/task-create" // Görev ekleme sayfasının route'u
-            element={<AccessControl element={<TaskForm />} />} // Erişim kontrolü ile koruyoruz
+           <Route
+            path="/galeri"
+            element={<AccessControl element={<GalleryPage />} />} // Protecting Gallery page with AccessControl
           />
         </Routes>
         

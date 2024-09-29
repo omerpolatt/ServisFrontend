@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleButtonClick = () => {
-    navigate('/task-create'); // Butona tıklandığında görev ekleme formuna yönlendirme yapıyoruz
+  const handleGalleryClick = () => {
+    navigate('/galeri'); // Redirect to the gallery page
   };
 
   return (
@@ -14,7 +14,7 @@ const HomePage: React.FC = () => {
       <p>
         Bu sayfa, uygulamanızın ana sayfasıdır. Burada ziyaretçilere genel bilgiler sunabilirsiniz.
       </p>
-      <button onClick={handleButtonClick}>Görev Ekleme Sayfasına Git</button> {/* Yönlendirme butonu */}
+      <button onClick={handleGalleryClick}>Go to Gallery Page</button> {/* New button to redirect to Gallery */}
     </div>
   );
 };
