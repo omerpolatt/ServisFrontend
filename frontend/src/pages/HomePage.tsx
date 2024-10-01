@@ -1,20 +1,42 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import UploadForm from '../forum/UploadForm';  // Dosya yükleme formu bileşeni
+
+// Cookie'den token almak için yardımcı fonksiyon
+function getCookie(name: string): string | null {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+}
 
 const HomePage: React.FC = () => {
-  const navigate = useNavigate();
+  const [token, setToken] = useState<string | null>(null);
 
-  const handleGalleryClick = () => {
-    navigate('/galeri'); // Redirect to the gallery page
-  };
+  // Component mount edildiğinde token'ı Cookie'den alıyoruz
+  useEffect(() => {
+    const cookieToken = getCookie('token');  // Cookie'den token alıyoruz
+    if (cookieToken) {
+      setToken(cookieToken);
+      console.log("Token bulundu: ", cookieToken);  // Token'ı konsola yazdırıyoruz
+    } else {
+      console.error("Token bulunamadı.");
+    }
+  }, []);
 
   return (
     <div>
-      <h1>Burası Ana Sayfadır</h1>
-      <p>
-        Bu sayfa, uygulamanızın ana sayfasıdır. Burada ziyaretçilere genel bilgiler sunabilirsiniz.
-      </p>
-      <button onClick={handleGalleryClick}>Go to Gallery Page</button> {/* New button to redirect to Gallery */}
+      <h1>Hoşgeldiniz!</h1>
+      <p>Burası anasayfa.</p>
+
+      {/* Token varsa, dosya yükleme formunu gösteriyoruz */}
+      {token ? (
+        <>
+          <p>Token bulundu. Dosya yükleyebilirsiniz.</p>
+          <UploadForm token={token} />
+        </>
+      ) : (
+        <p>Dosya yüklemek için giriş yapmanız gerekiyor.</p>
+      )}
     </div>
   );
 };
