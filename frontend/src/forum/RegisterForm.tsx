@@ -3,42 +3,50 @@ import { useRegisterStore } from '../stores/RegisterStore';
 import '../css/RegisterForm.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; 
-import { toast, ToastContainer } from 'react-toastify'; // Toastify import edildi
-import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS'i import edildi
+import { toast, ToastContainer } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const RegisterForm: React.FC = () => {
-  const { register, sendVerificationCode, verifyCode, verificationCodeSent, isVerified } = useRegisterStore(); 
+  const { register, sendVerificationCode, verifyCode, verificationCodeSent, isVerified } = useRegisterStore();
 
   const [formData, setFormData] = useState({
     UserName: '', 
     UserMail: '', 
     UserPassword: '',
-    verificationCode: '' // Kullanıcı tarafından girilen doğrulama kodu
+    verificationCode: ''
   });
 
-  const [showPassword, setShowPassword] = useState(false); // Şifre gösterme/gizleme
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verificationCodeSent) {
-      console.log("E-posta doğrulama kodu gönderiliyor:", formData.UserMail);
-      await sendVerificationCode(formData.UserMail);
-    } else if (!isVerified) {
-      console.log("Doğrulama kodu kontrol ediliyor:", formData.verificationCode);
-      await verifyCode(formData.UserMail, formData.verificationCode);
-    } else {
-      console.log("Kayıt işlemi yapılıyor:", formData);
-      await register(formData);
-
-      // Kayıt başarılı olduğunda toast mesajı göster
-      toast.success('Kayıt başarılı! Hoşgeldiniz.', {
+    try {
+      if (!verificationCodeSent) {
+        console.log("E-posta doğrulama kodu gönderiliyor:", formData.UserMail);
+        await sendVerificationCode(formData.UserMail);
+        toast.info('Doğrulama kodu gönderildi. Lütfen e-postanızı kontrol edin.', {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else if (!isVerified) {
+        console.log("Doğrulama kodu kontrol ediliyor:", formData.verificationCode);
+        await verifyCode(formData.UserMail, formData.verificationCode);
+        toast.success('Doğrulama başarılı! Şimdi kaydınızı tamamlayabilirsiniz.', {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        console.log("Kayıt işlemi yapılıyor:", formData);
+        await register(formData);
+        toast.success('Kayıt başarılı! Hoşgeldiniz.', {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      toast.error('Bir hata oluştu. Lütfen tekrar deneyin.', {
         position: "top-right",
         autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
       });
     }
   };
@@ -49,7 +57,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div className="register-page">
-      <ToastContainer /> {/* Toast bileşeni burada */}
+      <ToastContainer />
       <div className="register-container">
         <h2>Create an Account</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
