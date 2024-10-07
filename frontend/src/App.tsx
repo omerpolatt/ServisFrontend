@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import HomePage from './pages/HomePage';
+import HomePage from './pages/Buckets';
 import FlipLoginRegister from './components/FlipLoginRegister';  // Giriş ve kayıt bileşeni
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,16 +13,16 @@ const App: React.FC = () => {
         <ToastContainer />
         <Routes>
           {/* Giriş ve kayıt sayfası */}
-          <Route path="/" element={<FlipLoginRegister />} /> 
+          <Route path="/login-register" element={<FlipLoginRegister />} /> 
 
           {/* Anasayfa, erişim kontrolü ile korumalı */}
           <Route 
-            path="/anasayfa" 
+            path="/bucket" 
             element={<AccessControl element={<HomePage />} />} 
           />
 
           {/* Giriş yapılmamışsa ana sayfaya gitmeye çalışanlar giriş ekranına yönlendirilir */}
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/login-register" />} />
         </Routes>
       </div>
     </Router>

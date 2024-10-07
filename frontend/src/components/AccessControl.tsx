@@ -11,7 +11,7 @@ const AccessControl: React.FC<AccessControlProps> = ({ element }) => {
 
   // Eğer token yoksa giriş sayfasına yönlendir
   if (!token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login-register" replace />;
   }
 
   // Token varsa, istenen sayfayı göster

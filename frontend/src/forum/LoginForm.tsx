@@ -22,7 +22,7 @@ const LoginForm: React.FC = () => {
       // Login işlemi yapılıyor
       await login(email, password);
       toast.success('Login successful! Redirecting to homepage...');
-      navigate('/anasayfa'); // Başarılı girişten sonra yönlendirme
+      navigate('/bucket'); // Başarılı girişten sonra yönlendirme
     } catch (error) {
       toast.error('Login failed. Please check your credentials.');
     }
