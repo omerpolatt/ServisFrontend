@@ -1,10 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}", // Projenizdeki tüm .js, .jsx, .ts, .tsx dosyalarını tarar
+    "./src/**/*.{js,jsx,ts,tsx}", // src klasöründeki tüm js, jsx, ts, ve tsx dosyalarını takip eder.
   ],
   theme: {
     extend: {},
   },
   plugins: [],
-};
+}

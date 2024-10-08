@@ -107,49 +107,53 @@ const BucketPage: React.FC = () => {
       </div>
 
       {/* Bucket Listesi */}
-      <div className="max-w-6xl mx-auto bg-white shadow-lg p-8 rounded-lg">
+            <div className="max-w-6xl mx-auto bg-white shadow-lg p-8 rounded-lg">
         <h2 className="text-3xl font-semibold text-gray-800 mb-6">Bucket Listesi</h2>
         {loading ? (
           <p className="text-center text-gray-500">Yükleniyor...</p>
         ) : (
-          <table className="w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="text-left p-4 font-semibold">Bucket Adı</th>
-                <th className="text-left p-4 font-semibold">Oluşturma Tarihi</th>
-                <th className="text-left p-4 font-semibold">Düzenle</th>
-                <th className="text-left p-4 font-semibold">Sil</th>
-              </tr>
-            </thead>
-            <tbody>
-              {buckets.map((bucket) => (
-                <tr key={bucket.bucketId} className="border-b hover:bg-gray-50 transition-colors">
-                  <td className="p-4">{bucket.bucketName}</td>
-                  <td className="p-4">{new Date().toLocaleDateString()}</td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleOpenUpdateModal(bucket.bucketId)}
-                      className="text-blue-500 hover:text-blue-700 transition-colors"
-                    >
-                      Düzenle
-                    </button>
-                  </td>
-                  <td className="p-4">
-                  <button
-                    onClick={() => handleDeleteBucket(bucket.bucketId)}
-                    className="text-red-500 hover:text-red-700 flex items-center"
-                  >
-                    <TbTrashXFilled className="mr-2" /> {/* İkon burada */}
-                    Sil
-                  </button>
-
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border-b-2 border-gray-300">
+                  <th className="p-4 text-left text-sm font-bold text-gray-600 uppercase tracking-wider">Bucket Adı</th>
+                  <th className="p-4 text-left text-sm font-bold text-gray-600 uppercase tracking-wider">Oluşturma Tarihi</th>
+                  <th className="p-4 text-left text-sm font-bold text-gray-600 uppercase tracking-wider">Düzenle</th>
+                  <th className="p-4 text-left text-sm font-bold text-gray-600 uppercase tracking-wider">Sil</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {buckets.map((bucket) => (
+                  <tr
+                    key={bucket.bucketId}
+                    className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    <td className="p-4 text-sm text-gray-700">{bucket.bucketName}</td>
+                    <td className="p-4 text-sm text-gray-500">{new Date().toLocaleDateString()}</td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => handleOpenUpdateModal(bucket.bucketId)}
+                        className="text-blue-500 hover:text-blue-700 font-medium"
+                      >
+                        Düzenle
+                      </button>
+                    </td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => handleDeleteBucket(bucket.bucketId)}
+                        className="text-red-500 hover:text-red-700 flex items-center font-medium"
+                      >
+                        <TbTrashXFilled className="mr-2" /> Sil
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
+
 
       {/* Bucket adını güncelleme popup */}
       {isModalOpen && (
