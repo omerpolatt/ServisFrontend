@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import { useLoginStore } from '../stores/LoginStore'; // Zustand store import ediyoruz
 import { useNavigate } from 'react-router-dom'; // Yönlendirme için
@@ -22,7 +21,7 @@ const LoginForm: React.FC = () => {
       // Login işlemi yapılıyor
       await login(email, password);
       toast.success('Login successful! Redirecting to homepage...');
-      navigate('/bucket'); // Başarılı girişten sonra yönlendirme
+      navigate('/project'); // Başarılı girişten sonra yönlendirme
     } catch (error) {
       toast.error('Login failed. Please check your credentials.');
     }

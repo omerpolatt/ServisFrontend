@@ -1,106 +1,100 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-// Zustand store tipi
-interface BucketState {
-  buckets: { bucketId: string; bucketName: string }[];
-  bucketCreated: boolean;
-  error: string | null;
+interface Bucket {
+  _id: string;
+  subFolderName: string;
+  accessKey: string;
+  bucketId: string;
+  path: string;
+}
+
+interface BucketStore {
+  buckets: Bucket[];
   loading: boolean;
-  createBucket: (bucketName: string, token: string) => Promise<void>;
-  listBuckets: (token: string) => Promise<void>;
+  error: string | null;
+  listBuckets: (projectId: string, token: string) => Promise<void>;
+  createBucket: (projectId: string, subFolderName: string, token: string) => Promise<void>;
   updateBucketName: (bucketId: string, newBucketName: string, token: string) => Promise<void>;
   deleteBucket: (bucketId: string, token: string) => Promise<void>;
 }
 
-// Zustand store oluşturuyoruz
-export const useBucketStore = create<BucketState>((set) => ({
+export const useBucketStore = create<BucketStore>((set) => ({
   buckets: [],
-  bucketCreated: false,
-  error: null,
   loading: false,
+  error: null,
 
-  // Bucket oluşturma işlemi
-  createBucket: async (bucketName, token) => {
-    set({ loading: true });
+  // Bucket listeleme işlemi
+  listBuckets: async (projectId, token) => {
+    set({ loading: true, error: null });
     try {
-      const response = await axios.post(
-        'http://localhost:8080/api/bucket/create', 
-        { bucketName },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,  // Token ekleniyor
-          },
-        }
-      );
-      if (response.status === 200) {
-        set({ bucketCreated: true, error: null });
-      }
+      const response = await axios.get(`http://localhost:8080/api/bucket/list-buckets/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set({ buckets: response.data.buckets, loading: false });
     } catch (error) {
-      console.error('Bucket oluşturulamadı:', error);
-      set({ bucketCreated: false, error: 'Bucket oluşturulurken hata oluştu.' });
-    } finally {
-      set({ loading: false });
+      console.error('Klasörler listelenemedi:', error);
+      set({ error: 'Klasörler listelenemedi.', loading: false });
     }
   },
 
-  // Bucket listeleme işlemi
-  listBuckets: async (token) => {
-    set({ loading: true });
+  // Bucket oluşturma işlemi
+  createBucket: async (projectId, subFolderName, token) => {
+    set({ loading: true, error: null });
     try {
-      const response = await axios.get('http://localhost:8080/api/bucket/list', {
-        headers: {
-          Authorization: `Bearer ${token}`,  // Token ekleniyor
-        },
-      });
-      set({ buckets: response.data.buckets, error: null });
+      const response = await axios.post(
+        'http://localhost:8080/api/bucket/create-bucket',
+        { projectId, subFolderName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      set((state) => ({
+        buckets: [...state.buckets, response.data.bucket],
+        loading: false,
+      }));
     } catch (error) {
-      console.error('Bucket\'lar listelenemedi:', error);
-      set({ error: 'Bucket\'lar listelenirken hata oluştu.' });
-    } finally {
-      set({ loading: false });
+      console.error('Klasör oluşturulamadı:', error);
+      set({ error: 'Klasör oluşturulamadı.', loading: false });
     }
   },
 
   // Bucket adı güncelleme işlemi
   updateBucketName: async (bucketId, newBucketName, token) => {
-    set({ loading: true });
+    set({ loading: true, error: null });
     try {
-      await axios.patch(
-        `http://localhost:8080/api/bucket/${bucketId}`,
+      await axios.put(
+        `http://localhost:8080/api/bucket/update/${bucketId}`,
         { newBucketName },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,  // Token ekleniyor
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      set({ error: null });
-      // Listeyi tekrar güncelleyin
+      set((state) => ({
+        buckets: state.buckets.map((bucket) =>
+          bucket._id === bucketId
+            ? { ...bucket, subFolderName: newBucketName }
+            : bucket
+        ),
+        loading: false,
+      }));
     } catch (error) {
-      console.error('Bucket adı güncellenemedi:', error);
-      set({ error: 'Bucket adı güncellenirken hata oluştu.' });
-    } finally {
-      set({ loading: false });
+      console.error('Klasör adı güncellenemedi:', error);
+      set({ error: 'Klasör adı güncellenirken hata oluştu.', loading: false });
     }
   },
 
   // Bucket silme işlemi
   deleteBucket: async (bucketId, token) => {
-    set({ loading: true });
+    set({ loading: true, error: null });
     try {
-      await axios.delete(`http://localhost:8080/api/bucket/${bucketId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,  // Token ekleniyor
-        },
+      await axios.delete(`http://localhost:8080/api/bucket/delete-bucket/${bucketId}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      set({ error: null });
-      // Listeyi tekrar güncelleyin
+      set((state) => ({
+        buckets: state.buckets.filter((bucket) => bucket._id !== bucketId),
+        loading: false,
+      }));
     } catch (error) {
-      console.error('Bucket silinemedi:', error);
-      set({ error: 'Bucket silinirken hata oluştu.' });
-    } finally {
-      set({ loading: false });
+      console.error('Klasör silinemedi:', error);
+      set({ error: 'Klasör silinirken hata oluştu.', loading: false });
     }
   },
 }));
