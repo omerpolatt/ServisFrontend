@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 interface Bucket {
+  bucketName: string;
   _id: string;
   subFolderName: string;
   accessKey: string;
@@ -25,29 +26,39 @@ export const useBucketStore = create<BucketStore>((set) => ({
   error: null,
 
   // Bucket listeleme işlemi
-  listBuckets: async (projectId, token) => {
+  listBuckets: async (parentProjectAccessKey, token) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`http://localhost:8080/api/bucket/list-buckets/${projectId}`, {
+      const response = await axios.get(`http://localhost:8080/api/bucket/list-buckets/${parentProjectAccessKey}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      set({ buckets: response.data.buckets, loading: false });
+  
+      // Gelen verinin doğru olup olmadığını kontrol et
+      console.log('Backend Response:', response.data);  // Backend'den gelen yanıtı kontrol etmek için bu satırı ekledik
+  
+      if (response.data && response.data.buckets) {
+        set({ buckets: response.data.buckets, loading: false });
+      } else {
+        set({ error: 'Gelen veri beklenen formatta değil.', loading: false });
+      }
     } catch (error) {
       console.error('Klasörler listelenemedi:', error);
       set({ error: 'Klasörler listelenemedi.', loading: false });
     }
   },
+  
+  
 
   // Bucket oluşturma işlemi
-  createBucket: async (projectId, subFolderName, token) => {
+  createBucket: async (parentProjectAccessKey, subFolderName, token) => {
     set({ loading: true, error: null });
     try {
       const response = await axios.post(
         'http://localhost:8080/api/bucket/create-bucket',
-        { projectId, subFolderName },
+        { parentProjectAccessKey, subFolderName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
       set((state) => ({
         buckets: [...state.buckets, response.data.bucket],
         loading: false,
@@ -57,7 +68,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
       set({ error: 'Klasör oluşturulamadı.', loading: false });
     }
   },
-
+  
   // Bucket adı güncelleme işlemi
   updateBucketName: async (bucketId, newBucketName, token) => {
     set({ loading: true, error: null });

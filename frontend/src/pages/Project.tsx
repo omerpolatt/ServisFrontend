@@ -25,9 +25,11 @@ const ProjectPage: React.FC = () => {
     const cookieToken = getCookie('token');
     if (cookieToken) {
       setToken(cookieToken);
-      listProjects(cookieToken);
+      listProjects(cookieToken).then(() => {
+      });
     }
   }, []);
+  
 
   // Project oluşturma butonuna tıklanıldığında çalışacak fonksiyon
   const handleCreateProject = async () => {
@@ -43,15 +45,18 @@ const ProjectPage: React.FC = () => {
     setSelectedProjectId(projectId);
     setIsModalOpen(true);
   };
+  
 
   // Project adını güncelleme fonksiyonu
   const handleUpdateProjectName = () => {
     if (selectedProjectId && newProjectName && token) {
-      updateProjectName(selectedProjectId, newProjectName, token);
-      setNewProjectName('');
-      setIsModalOpen(false); // Modal kapatılır
+      updateProjectName(selectedProjectId, newProjectName, token).then(() => {
+        setNewProjectName('');  // Yeni adı sıfırla
+        setIsModalOpen(false);  // Modal'ı kapat
+      });
     }
   };
+  
 
   // Project silme fonksiyonu
   const handleDeleteProject = (projectId: string) => {

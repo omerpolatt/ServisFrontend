@@ -102,10 +102,13 @@ export const useProjectStore = create<ProjectState>((set) => ({
           Authorization: `Bearer ${token}`,  // Token ekleniyor
         },
       });
+
+      // Projeyi başarıyla sildikten sonra state'deki projeler listesini güncelliyoruz
       set((state) => ({
-        projects: state.projects.filter((project) => project.projectId !== projectId), // Silinen projeyi listeden kaldırıyoruz
+        projects: state.projects.filter((project) => project.projectId.toString() !== projectId), // `projectId` bir ObjectId olduğundan string karşılaştırması yapıyoruz
         error: null,
       }));
+
     } catch (error) {
       console.error('Proje silinemedi:', error);
       set({ error: 'Proje silinirken hata oluştu.' });
@@ -113,4 +116,5 @@ export const useProjectStore = create<ProjectState>((set) => ({
       set({ loading: false });
     }
   },
+
 }));

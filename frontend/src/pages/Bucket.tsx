@@ -111,7 +111,7 @@ const BucketPage: React.FC = () => {
               {buckets && buckets.length > 0 ? (
                 buckets.map((bucket) => (
                   <tr key={bucket._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                    <td className="p-4 text-gray-800 font-medium">{bucket.subFolderName}</td>
+                    <td className="p-4 text-gray-800 font-medium">{bucket.bucketName}</td>
                     <td className="p-4">
                       <button
                         onClick={() => handleViewFiles(bucket._id)}
@@ -122,7 +122,7 @@ const BucketPage: React.FC = () => {
                     </td>
                     <td className="p-4">
                       <button
-                        onClick={() => openDeleteModal(bucket._id, bucket.subFolderName)}
+                        onClick={() => openDeleteModal(bucket._id,bucket.bucketName)}
                         className="text-red-500 font-semibold hover:text-red-700 flex items-center"
                       >
                         <TbTrashXFilled className="mr-2" /> Sil
