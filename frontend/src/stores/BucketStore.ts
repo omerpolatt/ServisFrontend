@@ -4,9 +4,8 @@ import axios from 'axios';
 interface Bucket {
   bucketName: string;
   _id: string;
-  subFolderName: string;
   accessKey: string;
-  bucketId: string;
+  projectId: string;
   path: string;
 }
 
@@ -15,7 +14,7 @@ interface BucketStore {
   loading: boolean;
   error: string | null;
   listBuckets: (projectId: string, token: string) => Promise<void>;
-  createBucket: (projectId: string, subFolderName: string, token: string) => Promise<void>;
+  createBucket: (projectId: string, bucketName: string, token: string) => Promise<void>;
   updateBucketName: (bucketId: string, newBucketName: string, token: string) => Promise<void>;
   deleteBucket: (bucketId: string, token: string) => Promise<void>;
 }
@@ -26,15 +25,12 @@ export const useBucketStore = create<BucketStore>((set) => ({
   error: null,
 
   // Bucket listeleme işlemi
-  listBuckets: async (parentProjectAccessKey, token) => {
+  listBuckets: async (parentProjectId, token) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`http://localhost:8080/api/bucket/list-buckets/${parentProjectAccessKey}`, {
+      const response = await axios.get(`http://localhost:8080/api/bucket/list-buckets/${parentProjectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
-      // Gelen verinin doğru olup olmadığını kontrol et
-      console.log('Backend Response:', response.data);  // Backend'den gelen yanıtı kontrol etmek için bu satırı ekledik
   
       if (response.data && response.data.buckets) {
         set({ buckets: response.data.buckets, loading: false });
@@ -47,18 +43,19 @@ export const useBucketStore = create<BucketStore>((set) => ({
     }
   },
   
-  
 
   // Bucket oluşturma işlemi
-  createBucket: async (parentProjectAccessKey, subFolderName, token) => {
+  createBucket: async (projectId, bucketName, token) => {
     set({ loading: true, error: null });
     try {
+      console.log("Bucket Oluşturma İsteği - Project ID:", projectId);
+      console.log("Bucket Oluşturma İsteği - Bucket Name:", bucketName);
       const response = await axios.post(
         'http://localhost:8080/api/bucket/create-bucket',
-        { parentProjectAccessKey, subFolderName },
+        { projectId, bucketName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       set((state) => ({
         buckets: [...state.buckets, response.data.bucket],
         loading: false,
@@ -68,7 +65,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
       set({ error: 'Klasör oluşturulamadı.', loading: false });
     }
   },
-  
+
   // Bucket adı güncelleme işlemi
   updateBucketName: async (bucketId, newBucketName, token) => {
     set({ loading: true, error: null });
@@ -81,7 +78,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
       set((state) => ({
         buckets: state.buckets.map((bucket) =>
           bucket._id === bucketId
-            ? { ...bucket, subFolderName: newBucketName }
+            ? { ...bucket, bucketName: newBucketName }
             : bucket
         ),
         loading: false,

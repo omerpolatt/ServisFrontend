@@ -41,21 +41,25 @@ const ProjectPage: React.FC = () => {
   };
 
   // Project adını güncelleme popup açma fonksiyonu
-  const handleOpenUpdateModal = (projectId: string) => {
-    setSelectedProjectId(projectId);
-    setIsModalOpen(true);
-  };
+const handleOpenUpdateModal = (projectId: string, currentProjectName: string) => {
+  setSelectedProjectId(projectId);
+  setNewProjectName(currentProjectName);  // Eski proje adını input'a doldur
+  setIsModalOpen(true);
+};
+
   
 
-  // Project adını güncelleme fonksiyonu
-  const handleUpdateProjectName = () => {
-    if (selectedProjectId && newProjectName && token) {
-      updateProjectName(selectedProjectId, newProjectName, token).then(() => {
-        setNewProjectName('');  // Yeni adı sıfırla
-        setIsModalOpen(false);  // Modal'ı kapat
-      });
-    }
-  };
+// Project adını güncelleme fonksiyonu
+const handleUpdateProjectName = async () => {
+  if (selectedProjectId && newProjectName && token) {
+    await updateProjectName(selectedProjectId, newProjectName, token);
+    setNewProjectName('');  // Yeni adı sıfırla
+    setIsModalOpen(false);  // Modal'ı kapat
+  } else {
+    console.error('Eksik veri: Proje ID veya yeni proje adı eksik.');
+  }
+};
+
   
 
   // Project silme fonksiyonu
@@ -145,13 +149,13 @@ const ProjectPage: React.FC = () => {
                     </td>
                     <td className="p-4 text-sm text-gray-500">{new Date().toLocaleDateString()}</td>
                     <td className="p-4">
-                      <button
-                        onClick={() => handleOpenUpdateModal(project.projectId)}
-                        className="text-blue-500 hover:text-blue-700 font-medium"
-                      >
-                        Düzenle
-                      </button>
-                    </td>
+                    <button
+                      onClick={() => handleOpenUpdateModal(project.projectId, project.projectName)} // Proje adını da gönderiyoruz
+                      className="text-blue-500 hover:text-blue-700 font-medium"
+                    >
+                      Düzenle
+                    </button>
+                  </td>
                     <td className="p-4">
                       <button
                         onClick={() => handleDeleteProject(project.projectId)}

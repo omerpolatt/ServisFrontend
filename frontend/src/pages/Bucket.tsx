@@ -44,13 +44,15 @@ const BucketPage: React.FC = () => {
       console.error('Token veya parentProjectId eksik.');
     }
   }, [parentProjectId]);
-  
 
   const handleCreateBucket = async () => {
     if (bucketName && parentProjectId && token) {
       await createBucket(parentProjectId, bucketName, token);
       setBucketName('');
       setIsCreateModalOpen(false);
+      listBuckets(parentProjectId, token);  // Bucket listesi yeniden yüklenir
+    } else {
+      console.error('Bucket adı girilmelidir');
     }
   };
 
@@ -59,6 +61,7 @@ const BucketPage: React.FC = () => {
       await deleteBucket(selectedBucketId, token);
       setIsDeleteModalOpen(false);
       setDeleteConfirmName('');
+      listBuckets(parentProjectId!, token);  // Bucket listesi güncellenir
     }
   };
 
@@ -67,6 +70,9 @@ const BucketPage: React.FC = () => {
       await updateBucketName(selectedBucketId, bucketName, token);
       setBucketName('');
       setIsModalOpen(false);
+      listBuckets(parentProjectId!, token);  // Bucket listesi güncellenir
+    } else {
+      console.error('Yeni bucket adı girilmelidir');
     }
   };
 
@@ -240,3 +246,4 @@ const BucketPage: React.FC = () => {
 };
 
 export default BucketPage;
+
