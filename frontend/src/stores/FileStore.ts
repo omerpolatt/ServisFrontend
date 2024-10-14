@@ -82,19 +82,23 @@ export const useFileStore = create<FileStore>((set) => ({
   },
 
   // Dosya silme - accessKey ve fileId kullanarak
-  deleteFile: async (fileId, accessKey, token) => {
+  deleteFile: async (fileId: string, accessKey: string, token: string) => {
     set({ loading: true, error: null });
+  
     try {
-      await axios.delete(`http://localhost:8080/api/files/delete`, {
-        data: { fileId, accessKey },
-        headers: { Authorization: `Bearer ${token}` },  // Token yetkilendirme başlığı
+      await axios.delete(`http://localhost:8080/api/files/${accessKey}/${fileId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Token'ı gönderiyoruz
+        },
       });
+
       set((state) => ({
-        files: state.files.filter((file) => file._id !== fileId),
+        files: state.files.filter((file) => file._id !== fileId), // Silinen dosyayı listeden çıkarıyoruz
         loading: false,
       }));
+
     } catch (error) {
-      console.error("Dosya silinemedi:", error);
+      console.error('Dosya silinemedi:', error);
       set({ error: 'Dosya silinemedi.', loading: false });
     }
   },
