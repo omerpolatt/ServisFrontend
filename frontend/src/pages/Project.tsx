@@ -91,6 +91,15 @@ const ProjectPage: React.FC = () => {
     setIsCreateModalOpen(!isCreateModalOpen);
   };
 
+  // Popup dışında bir yere tıklandığında kapanmasını sağlama
+  const handleClickOutside = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setIsModalOpen(false);
+      setIsCreateModalOpen(false);
+      setIsDeleteModalOpen(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-50 to-gray-200 p-8">
       <h1 className="text-5xl font-extrabold text-center text-gray-900 mb-12">Proje Yönetimi</h1>
@@ -106,28 +115,30 @@ const ProjectPage: React.FC = () => {
 
         {/* Proje oluşturma popup */}
         {isCreateModalOpen && (
-          <div className="absolute top-full left-0 mt-2 bg-white p-6 rounded-lg shadow-lg w-96">
-            <h3 className="text-xl font-semibold mb-4">Yeni Proje Oluştur</h3>
-            <input
-              type="text"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              placeholder="Proje adı girin"
-              className="border border-gray-300 p-2 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={handleCreateProject}
-                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
-              >
-                Oluştur
-              </button>
-              <button
-                onClick={toggleCreateModal}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg"
-              >
-                İptal
-              </button>
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-20" onClick={handleClickOutside}>
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+              <h3 className="text-xl font-semibold mb-4">Yeni Proje Oluştur</h3>
+              <input
+                type="text"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                placeholder="Proje adı girin"
+                className="border border-gray-300 p-2 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={handleCreateProject}
+                  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
+                >
+                  Oluştur
+                </button>
+                <button
+                  onClick={toggleCreateModal}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg"
+                >
+                  İptal
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -156,7 +167,10 @@ const ProjectPage: React.FC = () => {
                     className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-all duration-200"
                   >
                     {/* Proje adına tıklanınca bucket'ları gösterecek */}
-                    <td className="p-4 text-sm text-gray-700 cursor-pointer" onClick={() => handleViewBuckets(project.projectId)}>
+                    <td
+                      className="p-4 text-sm text-gray-700 font-semibold cursor-pointer hover:text-blue-600 transition-all duration-200"
+                      onClick={() => handleViewBuckets(project.projectId)}
+                    >
                       {project.projectName}
                     </td>
                     <td className="p-4 text-sm text-gray-500">{new Date().toLocaleDateString()}</td>
@@ -186,7 +200,7 @@ const ProjectPage: React.FC = () => {
 
       {/* Silme doğrulama modalı */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleClickOutside}>
           <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
             <h3 className="text-2xl font-semibold text-gray-700 mb-4">Proje Sil</h3>
             <p className="mb-4">"{deleteConfirmProjectName}" projesini silmek için proje adını yazın:</p>
@@ -222,7 +236,7 @@ const ProjectPage: React.FC = () => {
 
       {/* Proje adını güncelleme modalı */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleClickOutside}>
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
             <h3 className="text-xl font-semibold mb-4">Proje Adını Güncelle</h3>
             <input
