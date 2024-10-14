@@ -35,6 +35,8 @@ const BucketPage: React.FC = () => {
 
   useEffect(() => {
     const cookieToken = getCookie('token');
+    console.log('Token:', cookieToken);  // Token'ı kontrol edin
+    console.log('Parent Project ID:', parentProjectId);  // parentProjectId'yi kontrol edin
     if (cookieToken && parentProjectId) {
       setToken(cookieToken);
       listBuckets(parentProjectId, cookieToken).catch(console.error);
@@ -48,7 +50,9 @@ const BucketPage: React.FC = () => {
       await createBucket(parentProjectId, bucketName, token);
       setBucketName('');
       setIsCreateModalOpen(false);
-      listBuckets(parentProjectId, token);
+      listBuckets(parentProjectId, token);  // Bucket listesi yeniden yüklenir
+    } else {
+      console.error('Bucket adı girilmelidir');
     }
   };
 
@@ -57,7 +61,7 @@ const BucketPage: React.FC = () => {
       await deleteBucket(selectedBucketId, token);
       setIsDeleteModalOpen(false);
       setDeleteConfirmName('');
-      listBuckets(parentProjectId!, token);
+      listBuckets(parentProjectId!, token);  // Bucket listesi güncellenir
     }
   };
 
@@ -66,7 +70,9 @@ const BucketPage: React.FC = () => {
       await updateBucketName(selectedBucketId, bucketName, token);
       setBucketName('');
       setIsModalOpen(false);
-      listBuckets(parentProjectId!, token);
+      listBuckets(parentProjectId!, token);  // Bucket listesi güncellenir
+    } else {
+      console.error('Yeni bucket adı girilmelidir');
     }
   };
 
@@ -77,15 +83,7 @@ const BucketPage: React.FC = () => {
   };
 
   const handleViewFiles = (bucketId: string) => {
-    navigate(`/bucket/files/${bucketId}`);
-  };
-
-  const handleClickOutside = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setIsModalOpen(false);
-      setIsCreateModalOpen(false);
-      setIsDeleteModalOpen(false);
-    }
+    navigate(`/bucket/${bucketId}`);
   };
 
   return (
@@ -130,7 +128,7 @@ const BucketPage: React.FC = () => {
                     </td>
                     <td className="p-4">
                       <button
-                        onClick={() => openDeleteModal(bucket._id, bucket.bucketName)}
+                        onClick={() => openDeleteModal(bucket._id,bucket.bucketName)}
                         className="text-red-500 font-semibold hover:text-red-700 flex items-center"
                       >
                         <TbTrashXFilled className="mr-2" /> Sil
@@ -149,7 +147,7 @@ const BucketPage: React.FC = () => {
 
         {/* Silme doğrulama modalı */}
         {isDeleteModalOpen && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleClickOutside}>
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20">
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
               <h3 className="text-2xl font-semibold text-gray-700 mb-4">Bucket Sil</h3>
               <p className="mb-4">"{selectedBucketName}" bucketini silmek için bucket adını yazın:</p>
@@ -185,7 +183,7 @@ const BucketPage: React.FC = () => {
 
         {/* Bucket oluşturma modalı */}
         {isCreateModalOpen && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleClickOutside}>
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20">
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
               <h3 className="text-2xl font-semibold text-gray-700 mb-4">Yeni Bucket Oluştur</h3>
               <input
@@ -215,7 +213,7 @@ const BucketPage: React.FC = () => {
 
         {/* Güncelleme modalı */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleClickOutside}>
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20">
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
               <h3 className="text-2xl font-semibold text-gray-700 mb-4">Bucket Adını Güncelle</h3>
               <input
@@ -248,3 +246,4 @@ const BucketPage: React.FC = () => {
 };
 
 export default BucketPage;
+

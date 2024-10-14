@@ -4,20 +4,29 @@ import { useParams } from 'react-router-dom';
 import { TbTrashXFilled } from 'react-icons/tb';
 
 const FileList: React.FC = () => {
-  const { subfolderId } = useParams<{ subfolderId: string }>();
-  const { files, loading, error, listFiles, deleteFile } = useFileStore();
+  const { bucketId } = useParams<{ bucketId: string }>();
+  const { files, loading, error, getAccessKey, listFiles, deleteFile } = useFileStore();
   const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
 
+  const [accessKey, setAccessKey] = useState<string | null>(null);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [confirmationInput, setConfirmationInput] = useState("");
 
+  // Bucket ID ile accessKey'yi alıp dosyaları listeleme
   useEffect(() => {
-    if (subfolderId && token) {
-      listFiles(subfolderId, token);
-    }
-  }, [subfolderId, token, listFiles]);
+    const fetchAccessKeyAndFiles = async () => {
+      if (bucketId && token) {
+        const key = await getAccessKey(bucketId, token);  // Token'ı burada da kullanıyoruz
+        if (key) {
+          setAccessKey(key);
+          listFiles(key, token);  // listFiles fonksiyonuna token'ı ekliyoruz
+        }
+      }
+    };
+    fetchAccessKeyAndFiles();
+  }, [bucketId, getAccessKey, listFiles, token]);
 
   const openDeleteDialog = (fileId: string, fileName: string) => {
     setSelectedFileId(fileId);
@@ -26,8 +35,8 @@ const FileList: React.FC = () => {
   };
 
   const handleDelete = () => {
-    if (token && selectedFileId) {
-      deleteFile(selectedFileId, token);
+    if (token && selectedFileId && accessKey) {
+      deleteFile(selectedFileId, accessKey, token);
       setDialogOpen(false);
       setConfirmationInput("");
     }
@@ -38,7 +47,6 @@ const FileList: React.FC = () => {
     setConfirmationInput("");
   };
 
-  // Dosya adlarına göre alfabetik olarak sıralama
   const sortedFiles = (files || []).slice().sort((a, b) => a.fileName.localeCompare(b.fileName));
 
   return (

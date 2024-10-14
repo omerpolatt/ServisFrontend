@@ -5,7 +5,7 @@ import FlipLoginRegister from './components/FlipLoginRegister';  // Giriş ve ka
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AccessControl from './components/AccessControl';
-import SubBucketPage from './pages/Bucket';
+import BucketPage from './pages/Bucket';
 import FileList from './pages/File';
 
 const App: React.FC = () => {
@@ -24,11 +24,11 @@ const App: React.FC = () => {
 
           {/* Alt bucket sayfası */}  
           <Route
-            path="/project/bucket/:parentProjectId"
-            element={<AccessControl element={<SubBucketPage />} />}
+            path="/project/:parentProjectId"
+            element={<AccessControl element={<BucketPage />} />}
           />
 
-          <Route path="/bucket/files/:subfolderId" element={<FileList />} />
+          <Route path="/bucket/:bucketId" element={<FileList />} />
 
           {/* Giriş yapılmamışsa ana sayfaya gitmeye çalışanlar giriş ekranına yönlendirilir */}
           <Route path="*" element={<Navigate to="/login-register" />} />

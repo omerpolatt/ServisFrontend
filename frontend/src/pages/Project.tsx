@@ -83,7 +83,7 @@ const ProjectPage: React.FC = () => {
 
   // Yönlendirme işlemi: Proje adına tıklandığında bucket'lara yönlendirir
   const handleViewBuckets = (projectId: string) => {
-    navigate(`/project/bucket/${projectId}`); // Bucket sayfasına yönlendirilir
+    navigate(`/project/${projectId}`); // Bucket sayfasına yönlendirilir
   };
 
   // Modal toggle
