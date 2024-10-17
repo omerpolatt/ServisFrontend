@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useProjectStore } from '../stores/ProjectStore';
 import { useNavigate } from 'react-router-dom';
 import { TbTrashXFilled } from "react-icons/tb";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Cookie'den token almak için yardımcı fonksiyon
 function getCookie(name: string): string | null {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-
   if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
   return null;
 }
@@ -40,6 +41,9 @@ const ProjectPage: React.FC = () => {
       await createProject(projectName, token); // Proje oluşturuluyor
       setProjectName(''); // Project adı temizlenir
       setIsCreateModalOpen(false); // Modal kapatılır
+      toast.success('Proje başarıyla oluşturuldu!', { position: 'top-right' }); // Başarı mesajı
+    } else {
+      toast.error('Proje adı boş olamaz!', { position: 'top-right' }); // Hata mesajı
     }
   };
 
@@ -56,8 +60,9 @@ const ProjectPage: React.FC = () => {
       await updateProjectName(selectedProjectId, newProjectName, token);
       setNewProjectName(''); // Yeni adı sıfırla
       setIsModalOpen(false); // Modal'ı kapat
+      toast.success('Proje adı başarıyla güncellendi!', { position: 'top-right' }); // Başarı mesajı
     } else {
-      console.error('Eksik veri: Proje ID veya yeni proje adı eksik.');
+      toast.error('Eksik veri: Proje ID veya yeni proje adı eksik.', { position: 'top-right' });
     }
   };
 
@@ -76,8 +81,9 @@ const ProjectPage: React.FC = () => {
       setDeleteConfirmProjectId(null);
       setDeleteConfirmProjectName('');
       setConfirmProjectName('');
+      toast.success('Proje başarıyla silindi!', { position: 'top-right' }); // Başarı mesajı
     } else {
-      console.error('Proje adı doğrulaması hatalı.');
+      toast.error('Proje adı doğrulaması hatalı.', { position: 'top-right' }); // Hata mesajı
     }
   };
 
@@ -263,6 +269,9 @@ const ProjectPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Toastify Container */}
+      <ToastContainer />
     </div>
   );
 };

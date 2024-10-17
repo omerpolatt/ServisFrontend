@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { TbTrashXFilled } from "react-icons/tb";
+import { TbTrashXFilled, TbInfoCircle, TbClipboard } from "react-icons/tb";
 import { useBucketStore } from '../stores/BucketStore';
+import { useProjectStore } from '../stores/ProjectStore'; 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 function getCookie(name: string): string | null {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-
   if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
   return null;
 }
 
 const BucketPage: React.FC = () => {
-  const { parentProjectId } = useParams<{ parentProjectId: string }>(); 
+  const { parentProjectId } = useParams<{ parentProjectId: string }>();
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
   const [bucketName, setBucketName] = useState<string>('');
@@ -22,6 +24,12 @@ const BucketPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [deleteConfirmName, setDeleteConfirmName] = useState<string>('');
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
+  const [selectedBucketDetails, setSelectedBucketDetails] = useState<{
+    link: string | null; name: string; projectName: string; accessKey: string
+  } | null>(null);
+
+  const [projectName, setProjectName] = useState<string>("");
 
   const {
     listBuckets,
@@ -32,27 +40,31 @@ const BucketPage: React.FC = () => {
     loading,
     error,
   } = useBucketStore();
+  const { projects, listProjects } = useProjectStore(); 
 
   useEffect(() => {
     const cookieToken = getCookie('token');
-    console.log('Token:', cookieToken);  // Token'ı kontrol edin
-    console.log('Parent Project ID:', parentProjectId);  // parentProjectId'yi kontrol edin
     if (cookieToken && parentProjectId) {
       setToken(cookieToken);
+      listProjects(cookieToken).then(() => {
+        const project = projects.find((proj) => proj.projectId === parentProjectId);
+        setProjectName(project ? project.projectName : "Proje Adı Bulunamadı");
+      }).catch(console.error);
       listBuckets(parentProjectId, cookieToken).catch(console.error);
     } else {
       console.error('Token veya parentProjectId eksik.');
     }
-  }, [parentProjectId]);
+  }, [parentProjectId, listProjects, listBuckets]);
 
   const handleCreateBucket = async () => {
     if (bucketName && parentProjectId && token) {
       await createBucket(parentProjectId, bucketName, token);
       setBucketName('');
       setIsCreateModalOpen(false);
-      listBuckets(parentProjectId, token);  // Bucket listesi yeniden yüklenir
+      listBuckets(parentProjectId, token);
+      toast.success('Bucket başarıyla oluşturuldu!', { position: 'top-right' });
     } else {
-      console.error('Bucket adı girilmelidir');
+      toast.error('Bucket adı girilmelidir!', { position: 'top-right' }); 
     }
   };
 
@@ -61,7 +73,8 @@ const BucketPage: React.FC = () => {
       await deleteBucket(selectedBucketId, token);
       setIsDeleteModalOpen(false);
       setDeleteConfirmName('');
-      listBuckets(parentProjectId!, token);  // Bucket listesi güncellenir
+      listBuckets(parentProjectId!, token);
+      toast.success('Bucket başarıyla silindi!', { position: 'top-right' });
     }
   };
 
@@ -70,9 +83,10 @@ const BucketPage: React.FC = () => {
       await updateBucketName(selectedBucketId, bucketName, token);
       setBucketName('');
       setIsModalOpen(false);
-      listBuckets(parentProjectId!, token);  // Bucket listesi güncellenir
+      listBuckets(parentProjectId!, token);
+      toast.success('Bucket adı başarıyla güncellendi!', { position: 'top-right' });
     } else {
-      console.error('Yeni bucket adı girilmelidir');
+      toast.error('Yeni bucket adı girilmelidir!', { position: 'top-right' });
     }
   };
 
@@ -86,11 +100,37 @@ const BucketPage: React.FC = () => {
     navigate(`/bucket/${bucketId}`);
   };
 
+  const openInfoModal = (bucket: any) => {
+    setSelectedBucketDetails({
+      name: bucket.bucketName,
+      projectName: projectName || "Proje Adı Belirtilmemiş",
+      accessKey: bucket.accessKey || "Erişim Anahtarı Belirtilmemiş",
+      link: bucket.link || "Henüz bir link yok"
+    });
+    setIsInfoModalOpen(true);
+  };
+
+  // Kopyalama fonksiyonu
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast.success('Bilgiler kopyalandı!', { position: 'top-right' });
+    }).catch(() => toast.error('Kopyalama hatası', { position: 'top-right' }));
+  };
+
+  // Modal dışına tıklayınca kapanması için helper fonksiyonu
+  const handleModalClickOutside = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setIsModalOpen(false);
+      setIsCreateModalOpen(false);
+      setIsDeleteModalOpen(false);
+      setIsInfoModalOpen(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
       <div className="bg-white shadow-md rounded-lg p-6">
         <h2 className="text-3xl font-semibold text-gray-700 mb-4">Bucket Yönetimi</h2>
-
         <div className="flex justify-end mb-6">
           <button
             onClick={() => setIsCreateModalOpen(true)}
@@ -99,7 +139,6 @@ const BucketPage: React.FC = () => {
             Yeni Bucket Oluştur
           </button>
         </div>
-
         {loading ? (
           <p className="text-center text-gray-500">Yükleniyor...</p>
         ) : error ? (
@@ -109,7 +148,8 @@ const BucketPage: React.FC = () => {
             <thead>
               <tr className="bg-gray-100 border-b-2 border-gray-200">
                 <th className="text-left p-4 font-semibold">Bucket Adı</th>
-                <th className="text-left p-4 font-semibold">Dosyaları Gör</th>
+                <th className="text-left p-4 font-semibold">Bilgi</th>
+                <th className="text-center p-4 font-semibold">Dosyaları Gör</th>
                 <th className="text-left p-4 font-semibold">Sil</th>
               </tr>
             </thead>
@@ -117,37 +157,78 @@ const BucketPage: React.FC = () => {
               {buckets && buckets.length > 0 ? (
                 buckets.map((bucket) => (
                   <tr key={bucket._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                    <td className="p-4 text-gray-800 font-medium">{bucket.bucketName}</td>
-                    <td className="p-4">
+                    <td className="p-4 text-gray-800 font-medium align-middle">{bucket.bucketName}</td>
+                    <td className="p-4 text-center align-middle">
+                      <button
+                        onClick={() => openInfoModal(bucket)}
+                        className="flex justify-center items-center text-green-700 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <TbInfoCircle className="text-base" />
+                        <span>Bilgi</span>
+                      </button>
+                    </td>
+                    <td className="p-4 text-center align-middle">
                       <button
                         onClick={() => handleViewFiles(bucket._id)}
-                        className="text-blue-500 font-semibold hover:text-blue-700 flex items-center"
+                        className="text-blue-500 font-semibold hover:text-blue-700"
                       >
                         Dosyaları Gör
                       </button>
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 text-center align-middle">
                       <button
-                        onClick={() => openDeleteModal(bucket._id,bucket.bucketName)}
-                        className="text-red-500 font-semibold hover:text-red-700 flex items-center"
+                        onClick={() => openDeleteModal(bucket._id, bucket.bucketName)}
+                        className="text-red-500 font-semibold hover:text-red-700 flex items-center justify-center"
                       >
-                        <TbTrashXFilled className="mr-2" /> Sil
+                        <TbTrashXFilled className="mr-1" /> Sil
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="text-center p-4 text-gray-500">Bucket bulunamadı.</td>
+                  <td colSpan={4} className="text-center p-4 text-gray-500">Bucket bulunamadı.</td>
                 </tr>
               )}
             </tbody>
           </table>
         )}
 
-        {/* Silme doğrulama modalı */}
+        {/* Info Modal */}
+        {isInfoModalOpen && selectedBucketDetails && (
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleModalClickOutside}>
+            <div className="bg-white p-8 rounded-lg shadow-2xl max-w-2xl w-full relative">
+              <h3 className="text-2xl font-semibold text-gray-700 mb-4">Bucket Hakkında</h3>
+              <p className="mb-4">BUCKET_NAME: <strong>{selectedBucketDetails.name}</strong></p>
+              <p className="mb-4">Project: <strong>{selectedBucketDetails.projectName}</strong></p>
+              <p className="mb-4">ACCESS_KEY: <strong className="break-words">{selectedBucketDetails.accessKey}</strong></p>
+              <p className="mb-4">Link: {selectedBucketDetails.link}</p>
+
+              <button
+                onClick={() => {
+                  const dataToCopy = `BUCKET_NAME: ${selectedBucketDetails.name}\nProject: ${selectedBucketDetails.projectName}\nACCESS_KEY: ${selectedBucketDetails.accessKey}\nLink: ${selectedBucketDetails.link || "Henüz bir link yok"}`;
+                  copyToClipboard(dataToCopy);
+                }}
+                className="absolute top-4 right-4 p-2 bg-blue-600 hover:bg-blue-600 text-white rounded-full shadow-lg"
+              >
+                <TbClipboard className="text-xl" />
+              </button>
+
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setIsInfoModalOpen(false)}
+                  className= "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+                >
+                  Kapat
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Diğer modallar da aynı handleModalClickOutside fonksiyonunu kullanacak */}
         {isDeleteModalOpen && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20">
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleModalClickOutside}>
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
               <h3 className="text-2xl font-semibold text-gray-700 mb-4">Bucket Sil</h3>
               <p className="mb-4">"{selectedBucketName}" bucketini silmek için bucket adını yazın:</p>
@@ -162,11 +243,10 @@ const BucketPage: React.FC = () => {
                 <button
                   onClick={handleDeleteBucket}
                   disabled={deleteConfirmName !== selectedBucketName}
-                  className={`${
-                    deleteConfirmName === selectedBucketName
-                      ? "bg-blue-500 hover:bg-blue-600"
-                      : "bg-gray-300 cursor-not-allowed"
-                  } text-white font-semibold py-2 px-6 rounded-lg shadow-md`}
+                  className={`${deleteConfirmName === selectedBucketName
+                    ? "bg-blue-500 hover:bg-blue-600"
+                    : "bg-gray-300 cursor-not-allowed"
+                    } text-white font-semibold py-2 px-6 rounded-lg shadow-md`}
                 >
                   Sil
                 </button>
@@ -181,9 +261,9 @@ const BucketPage: React.FC = () => {
           </div>
         )}
 
-        {/* Bucket oluşturma modalı */}
+        {/* Create Bucket Modal */}
         {isCreateModalOpen && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20">
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleModalClickOutside}>
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
               <h3 className="text-2xl font-semibold text-gray-700 mb-4">Yeni Bucket Oluştur</h3>
               <input
@@ -211,9 +291,9 @@ const BucketPage: React.FC = () => {
           </div>
         )}
 
-        {/* Güncelleme modalı */}
+        {/* Update Bucket Name Modal */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20">
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleModalClickOutside}>
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
               <h3 className="text-2xl font-semibold text-gray-700 mb-4">Bucket Adını Güncelle</h3>
               <input
@@ -241,9 +321,11 @@ const BucketPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Toastify Container */}
+      <ToastContainer />
     </div>
   );
 };
 
 export default BucketPage;
-
