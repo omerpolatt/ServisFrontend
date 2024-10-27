@@ -7,17 +7,30 @@ interface Bucket {
   accessKey: string;
   projectId: string;
   path: string;
+  totalSizeMB?: string;
+} 
+
+interface UploadedFile {
+  _id: string;
+  fileName: string;
+  filePath: string;
+  fileType: string;
+  fileSize: number;
+  accessKey: string;
+  uploadedAt: string;
 }
+
 
 interface BucketStore {
   buckets: Bucket[];
   loading: boolean;
   error: string | null;
-  listBuckets: (projectId: string, token: string) => Promise<void>;
+  listBuckets: (projectId: string, token: string) => Promise<void>; // Virgül önemli
   createBucket: (projectId: string, bucketName: string, token: string) => Promise<void>;
   updateBucketName: (bucketId: string, newBucketName: string, token: string) => Promise<void>;
   deleteBucket: (bucketId: string, token: string) => Promise<void>;
 }
+
 
 export const useBucketStore = create<BucketStore>((set) => ({
   buckets: [],
@@ -25,24 +38,48 @@ export const useBucketStore = create<BucketStore>((set) => ({
   error: null,
 
   // Bucket listeleme işlemi
-  listBuckets: async (parentProjectId, token) => {
+  listBuckets: async (parentProjectId: string, token: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`http://localhost:8080/api/bucket/list-buckets/${parentProjectId}`, {
+      const response = await axios.get(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/bucket/list-buckets/${parentProjectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (response.data && response.data.buckets) {
-        set({ buckets: response.data.buckets, loading: false });
+        const buckets = response.data.buckets;
+
+        // Her bucket için dosya boyutunu hesapla
+        const bucketsWithSizes = await Promise.all(buckets.map(async (bucket: Bucket) => {
+          try {
+            const filesResponse = await axios.get(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/files/${bucket.accessKey}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+        
+            if (filesResponse.data && filesResponse.data.files) {
+              const totalSizeInMB = (filesResponse.data.files.reduce((acc: number, file: UploadedFile) => acc + file.fileSize, 0) / (1024 * 1024)).toFixed(2);
+              return {
+                ...bucket,
+                totalSizeMB: totalSizeInMB,
+              };
+            } else {
+              return bucket;
+            }
+          } catch (error) {
+            console.error('Dosyalar alınamadı:', error);
+            return bucket;
+          }
+        }));
+        
+
+        set({ buckets: bucketsWithSizes, loading: false });
       } else {
-        set({ error: 'Gelen veri beklenen formatta değil.', loading: false });
+        set({ error: 'Beklenen veri formatı bulunamadı.', loading: false });
       }
     } catch (error) {
-      console.error('Klasörler listelenemedi:', error);
-      set({ error: 'Klasörler listelenemedi.', loading: false });
+      console.error('Bucket listesi alınamadı:', error);
+      set({ error: 'Bucket listesi alınırken bir hata oluştu.', loading: false });
     }
-  },
-  
+  }, 
 
   // Bucket oluşturma işlemi
   createBucket: async (projectId, bucketName, token) => {
@@ -51,7 +88,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
       console.log("Bucket Oluşturma İsteği - Project ID:", projectId);
       console.log("Bucket Oluşturma İsteği - Bucket Name:", bucketName);
       const response = await axios.post(
-        'http://localhost:8080/api/bucket/create-bucket',
+        'http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/bucket/create-bucket',
         { projectId, bucketName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +108,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
     set({ loading: true, error: null });
     try {
       await axios.put(
-        `http://localhost:8080/api/bucket/update/${bucketId}`,
+        `http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/bucket/update/${bucketId}`,
         { newBucketName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -93,7 +130,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
   deleteBucket: async (bucketId, token) => {
     set({ loading: true, error: null });
     try {
-      await axios.delete(`http://localhost:8080/api/bucket/delete-bucket/${bucketId}`, {
+      await axios.delete(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/bucket/delete-bucket/${bucketId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       set((state) => ({

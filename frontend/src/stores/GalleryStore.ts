@@ -27,7 +27,7 @@ export const useGalleryStore = create<GalleryState>((set) => ({
       const token = getToken(); // Token'ı alıyoruz
 
       // Dosya yükleme isteği
-      await axios.post('http://localhost:8080/api/files/upload', formData, {
+      await axios.post('http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`, // Token'ı ekliyoruz
@@ -48,7 +48,7 @@ export const useGalleryStore = create<GalleryState>((set) => ({
     try {
       const token = getToken(); // Token'ı alıyoruz
 
-      const response = await axios.get('http://localhost:8080/api/files', {
+      const response = await axios.get('http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files', {
         headers: {
           'Authorization': `Bearer ${token}`, // Token'ı ekliyoruz
         },
@@ -64,7 +64,7 @@ export const useGalleryStore = create<GalleryState>((set) => ({
     try {
       const token = getToken(); // Token'ı alıyoruz
 
-      await axios.delete(`http://localhost:8080/api/files/${filename}`, {
+      await axios.delete(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/${filename}`, {
         headers: {
           'Authorization': `Bearer ${token}`, // Token'ı ekliyoruz
         },

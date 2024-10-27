@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { TbTrashXFilled, TbInfoCircle, TbClipboard } from "react-icons/tb";
 import { useBucketStore } from '../stores/BucketStore';
-import { useProjectStore } from '../stores/ProjectStore'; 
+import { useProjectStore } from '../stores/ProjectStore';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; 
+import 'react-toastify/dist/ReactToastify.css';
 
 function getCookie(name: string): string | null {
   const value = `; ${document.cookie}`;
@@ -26,9 +26,8 @@ const BucketPage: React.FC = () => {
   const [deleteConfirmName, setDeleteConfirmName] = useState<string>('');
   const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
   const [selectedBucketDetails, setSelectedBucketDetails] = useState<{
-    link: string | null; name: string; projectName: string; accessKey: string
+    link: string | null; name: string; projectName: string; accessKey: string; totalSizeMB?: string;
   } | null>(null);
-
   const [projectName, setProjectName] = useState<string>("");
 
   const {
@@ -40,7 +39,8 @@ const BucketPage: React.FC = () => {
     loading,
     error,
   } = useBucketStore();
-  const { projects, listProjects } = useProjectStore(); 
+
+  const { projects, listProjects } = useProjectStore();
 
   useEffect(() => {
     const cookieToken = getCookie('token');
@@ -64,7 +64,7 @@ const BucketPage: React.FC = () => {
       listBuckets(parentProjectId, token);
       toast.success('Bucket başarıyla oluşturuldu!', { position: 'top-right' });
     } else {
-      toast.error('Bucket adı girilmelidir!', { position: 'top-right' }); 
+      toast.error('Bucket adı girilmelidir!', { position: 'top-right' });
     }
   };
 
@@ -105,7 +105,8 @@ const BucketPage: React.FC = () => {
       name: bucket.bucketName,
       projectName: projectName || "Proje Adı Belirtilmemiş",
       accessKey: bucket.accessKey || "Erişim Anahtarı Belirtilmemiş",
-      link: bucket.link || "Henüz bir link yok"
+      link: "http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/s3Space",
+      totalSizeMB: bucket.totalSizeMB || "0" // Toplam boyut
     });
     setIsInfoModalOpen(true);
   };
@@ -117,7 +118,6 @@ const BucketPage: React.FC = () => {
     }).catch(() => toast.error('Kopyalama hatası', { position: 'top-right' }));
   };
 
-  // Modal dışına tıklayınca kapanması için helper fonksiyonu
   const handleModalClickOutside = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       setIsModalOpen(false);
@@ -148,16 +148,34 @@ const BucketPage: React.FC = () => {
             <thead>
               <tr className="bg-gray-100 border-b-2 border-gray-200">
                 <th className="text-left p-4 font-semibold">Bucket Adı</th>
+                <th className="text-left p-4 font-semibold">Toplam Boyut (MB)</th>
+                <th className="text-left p-4 font-semibold">Doluluk Oranı</th>
                 <th className="text-left p-4 font-semibold">Bilgi</th>
                 <th className="text-center p-4 font-semibold">Dosyaları Gör</th>
                 <th className="text-left p-4 font-semibold">Sil</th>
               </tr>
             </thead>
             <tbody>
-              {buckets && buckets.length > 0 ? (
-                buckets.map((bucket) => (
+              {buckets.map((bucket) => {
+                const totalSizeMB = bucket.totalSizeMB ? parseFloat(bucket.totalSizeMB) : 0; // Toplam boyut
+                const maxSizeMB = 2048; // 2 GB = 2048 MB
+                const usagePercentage = (totalSizeMB / maxSizeMB) * 100; // Kullanım oranı hesaplama
+
+                return (
                   <tr key={bucket._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                     <td className="p-4 text-gray-800 font-medium align-middle">{bucket.bucketName}</td>
+                    <td className="p-4 text-gray-800 font-medium align-middle">{totalSizeMB} MB</td>
+                    <td className="p-4 align-middle">
+                      <div className="flex items-center">
+                        <div className="w-1/2 bg-gray-200 rounded-full h-2.5 mr-2">
+                          <div
+                            className="bg-green-600 h-2.5 rounded-full"
+                            style={{ width: `${usagePercentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm font-medium">{usagePercentage.toFixed(2)}%</span>
+                      </div>
+                    </td>
                     <td className="p-4 text-center align-middle">
                       <button
                         onClick={() => openInfoModal(bucket)}
@@ -184,16 +202,11 @@ const BucketPage: React.FC = () => {
                       </button>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="text-center p-4 text-gray-500">Bucket bulunamadı.</td>
-                </tr>
-              )}
+                );
+              })}
             </tbody>
           </table>
         )}
-
         {/* Info Modal */}
         {isInfoModalOpen && selectedBucketDetails && (
           <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleModalClickOutside}>
@@ -203,21 +216,19 @@ const BucketPage: React.FC = () => {
               <p className="mb-4">Project: <strong>{selectedBucketDetails.projectName}</strong></p>
               <p className="mb-4">ACCESS_KEY: <strong className="break-words">{selectedBucketDetails.accessKey}</strong></p>
               <p className="mb-4">Link: {selectedBucketDetails.link}</p>
-
               <button
                 onClick={() => {
-                  const dataToCopy = `BUCKET_NAME: ${selectedBucketDetails.name}\nProject: ${selectedBucketDetails.projectName}\nACCESS_KEY: ${selectedBucketDetails.accessKey}\nLink: ${selectedBucketDetails.link || "Henüz bir link yok"}`;
+                  const dataToCopy = `BUCKET_NAME: ${selectedBucketDetails.name}\nProject: ${selectedBucketDetails.projectName}\nACCESS_KEY: ${selectedBucketDetails.accessKey}\nToplam Boyut: ${selectedBucketDetails.totalSizeMB} MB\nLink: ${selectedBucketDetails.link || "Henüz bir link yok"}`;
                   copyToClipboard(dataToCopy);
                 }}
                 className="absolute top-4 right-4 p-2 bg-blue-600 hover:bg-blue-600 text-white rounded-full shadow-lg"
               >
                 <TbClipboard className="text-xl" />
               </button>
-
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={() => setIsInfoModalOpen(false)}
-                  className= "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105"
                 >
                   Kapat
                 </button>
@@ -225,8 +236,7 @@ const BucketPage: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Diğer modallar da aynı handleModalClickOutside fonksiyonunu kullanacak */}
+        {/* Diğer modallar */}
         {isDeleteModalOpen && (
           <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleModalClickOutside}>
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
@@ -260,7 +270,6 @@ const BucketPage: React.FC = () => {
             </div>
           </div>
         )}
-
         {/* Create Bucket Modal */}
         {isCreateModalOpen && (
           <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleModalClickOutside}>
@@ -290,7 +299,6 @@ const BucketPage: React.FC = () => {
             </div>
           </div>
         )}
-
         {/* Update Bucket Name Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-20" onClick={handleModalClickOutside}>
@@ -321,7 +329,6 @@ const BucketPage: React.FC = () => {
           </div>
         )}
       </div>
-
       {/* Toastify Container */}
       <ToastContainer />
     </div>

@@ -25,7 +25,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
     set({ loading: true });
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/project/create', 
+        'http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/project/create', 
         { projectName },
         {
           headers: {
@@ -52,7 +52,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
   listProjects: async (token) => {
     set({ loading: true });
     try {
-      const response = await axios.get('http://localhost:8080/api/project/list', {
+      const response = await axios.get('http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/project/list', {
         headers: {
           Authorization: `Bearer ${token}`,  // Token ekleniyor
         },
@@ -71,7 +71,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
     set({ loading: true });
     try {
       await axios.patch(
-        `http://localhost:8080/api/project/${projectId}`,
+        `http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/project/${projectId}`,
         { newProjectName },
         {
           headers: {
@@ -97,7 +97,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
   deleteProject: async (projectId, token) => {
     set({ loading: true });
     try {
-      await axios.delete(`http://localhost:8080/api/project/${projectId}`, {
+      await axios.delete(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/project/${projectId}`, {
         headers: {
           Authorization: `Bearer ${token}`,  // Token ekleniyor
         },

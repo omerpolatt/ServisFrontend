@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import axios from 'axios';
-
 interface UploadedFile {
   _id: string;
   fileName: string;
@@ -10,7 +9,6 @@ interface UploadedFile {
   bucketId: string;
   uploadedAt: Date;
 }
-
 interface FileStore {
   files: UploadedFile[];
   loading: boolean;
@@ -20,16 +18,14 @@ interface FileStore {
   uploadFile: (accessKey: string, file: File, token: string) => Promise<void>;
   deleteFile: (fileId: string, accessKey: string, token: string) => Promise<void>;
 }
-
 export const useFileStore = create<FileStore>((set) => ({
   files: [],
   loading: false,
   error: null,
-
   // Bucket ID ile AccessKey alma
   getAccessKey: async (bucketId, token: string) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/files/buckets/accessKey/${bucketId}`, {
+      const response = await axios.get(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/buckets/accessKey/${bucketId}`, {
         headers: { Authorization: `Bearer ${token}` },  // Token yetkilendirme başlığıyla gönderiliyor
       });
       return response.data.accessKey;
@@ -38,12 +34,11 @@ export const useFileStore = create<FileStore>((set) => ({
       return null;
     }
   },
-
   // Dosya listeleme - accessKey ve token kullanarak
   listFiles: async (accessKey, token: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`http://localhost:8080/api/files/files/${accessKey}`, {
+      const response = await axios.get(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/files/${accessKey}`, {
         headers: { Authorization: `Bearer ${token}` },  // Token yetkilendirme başlığı
       });
       set({ files: response.data.files, loading: false });
@@ -52,7 +47,6 @@ export const useFileStore = create<FileStore>((set) => ({
       set({ error: 'Dosyalar listelenemedi.', loading: false });
     }
   },
-
   // Dosya yükleme - accessKey ve token kullanarak
   uploadFile: async (accessKey, file: File, token: string) => {
     set({ loading: true, error: null });
@@ -60,9 +54,8 @@ export const useFileStore = create<FileStore>((set) => ({
       const formData = new FormData();
       formData.append('file', file);
       formData.append('accessKey', accessKey);
-
       const response = await axios.post(
-        `http://localhost:8080/api/files/upload`,
+        `http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/upload`,
         formData,
         {
           headers: {
@@ -80,23 +73,19 @@ export const useFileStore = create<FileStore>((set) => ({
       set({ error: 'Dosya yüklenemedi.', loading: false });
     }
   },
-
   // Dosya silme - accessKey ve fileId kullanarak
   deleteFile: async (fileId: string, accessKey: string, token: string) => {
     set({ loading: true, error: null });
-  
     try {
-      await axios.delete(`http://localhost:8080/api/files/${accessKey}/${fileId}`, {
+      await axios.delete(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/${accessKey}/${fileId}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Token'ı gönderiyoruz
+          Authorization: `Bearer ${token}`,
         },
       });
-
       set((state) => ({
-        files: state.files.filter((file) => file._id !== fileId), // Silinen dosyayı listeden çıkarıyoruz
+        files: state.files.filter((file) => file._id !== fileId),
         loading: false,
       }));
-
     } catch (error) {
       console.error('Dosya silinemedi:', error);
       set({ error: 'Dosya silinemedi.', loading: false });

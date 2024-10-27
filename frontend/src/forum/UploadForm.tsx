@@ -22,7 +22,7 @@ const UploadForm: React.FC<{ token: string }> = ({ token }) => {
     formData.append('file', file);  // Form verisine dosyayı ekle
 
     try {
-      const response = await axios.post('http://localhost:8080/api/files/upload', formData, {
+      const response = await axios.post('http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/upload', formData, {
         headers: {
           'Authorization': `Bearer ${token}`,  // Token'ı header'da gönderiyoruz
           'Content-Type': 'multipart/form-data',

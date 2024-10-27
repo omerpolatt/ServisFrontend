@@ -29,7 +29,7 @@ export const useLoginStore = create<LoginStore>((set) => ({
   login: async (email: string, password: string) => {
     try {
       // Backend'e login isteği
-      const response = await axios.post<LoginResponse>('http://localhost:8080/api/auth/login', {
+      const response = await axios.post<LoginResponse>('http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/auth/login', {
         UserMail: email,
         UserPassword: password,
       });
