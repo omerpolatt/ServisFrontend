@@ -3,6 +3,13 @@ import { useFileStore } from '../stores/FileStore';
 import { useParams } from 'react-router-dom';
 import { TbTrashXFilled } from 'react-icons/tb';
 
+const formatFileSize = (size: number) => {
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+  if (size < 1024 * 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+};
+
 const FileList: React.FC = () => {
   const { bucketId } = useParams<{ bucketId: string }>();
   const { files, loading, error, getAccessKey, listFiles, deleteFile } = useFileStore();
@@ -73,7 +80,7 @@ const FileList: React.FC = () => {
 
   const toggleMultiDeleteMode = () => {
     setMultiDeleteMode((prev) => {
-      if (prev) setSelectedFiles(new Set()); // Seçim modundan çıkarken seçili dosyaları temizle
+      if (prev) setSelectedFiles(new Set());
       return !prev;
     });
   };
@@ -104,6 +111,7 @@ const FileList: React.FC = () => {
                 <th className="p-4 font-semibold text-gray-600 text-center border">Sıra No</th>
                 <th className="p-4 font-semibold text-gray-600 text-center border">Dosya Adı</th>
                 <th className="p-4 font-semibold text-gray-600 text-center border">Dosya Türü</th>
+                <th className="p-4 font-semibold text-gray-600 text-center border">Dosya Boyutu</th>
                 <th className="p-4 font-semibold text-gray-600 text-center border">Oluşturulma Tarihi</th>
                 <th className="p-4 font-semibold text-gray-600 text-left border">Sil</th>
               </tr>
@@ -111,19 +119,19 @@ const FileList: React.FC = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center p-6 text-gray-500">
+                  <td colSpan={7} className="text-center p-6 text-gray-500">
                     Yükleniyor...
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan={6} className="text-center p-6 text-red-500">
+                  <td colSpan={7} className="text-center p-6 text-red-500">
                     {error}
                   </td>
                 </tr>
               ) : sortedFiles.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center p-6 text-gray-500">
+                  <td colSpan={7} className="text-center p-6 text-gray-500">
                     Dosya yoktur.
                   </td>
                 </tr>
@@ -140,6 +148,7 @@ const FileList: React.FC = () => {
                       {file.fileName.replace(/\.[^/.]+$/, "")}
                     </td>
                     <td className="p-4 text-gray-800 text-center border">{file.fileType}</td>
+                    <td className="p-4 text-gray-800 text-center border">{formatFileSize(file.fileSize)}</td>
                     <td className="p-4 text-gray-800 text-center border">{new Date(file.uploadedAt).toLocaleString()}</td>
                     <td className="p-4 text-center border">
                       <button
