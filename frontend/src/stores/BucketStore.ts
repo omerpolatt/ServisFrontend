@@ -41,7 +41,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
   listBuckets: async (parentProjectId: string, token: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/bucket/list-buckets/${parentProjectId}`, {
+      const response = await axios.get(`http://s3-space.uniworkhub.com/api/bucket/list-buckets/${parentProjectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -51,7 +51,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
         // Her bucket için dosya boyutunu hesapla
         const bucketsWithSizes = await Promise.all(buckets.map(async (bucket: Bucket) => {
           try {
-            const filesResponse = await axios.get(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/files/${bucket.accessKey}`, {
+            const filesResponse = await axios.get(`http://s3-space.uniworkhub.com/api/files/files/${bucket.accessKey}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
         
@@ -88,7 +88,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
       console.log("Bucket Oluşturma İsteği - Project ID:", projectId);
       console.log("Bucket Oluşturma İsteği - Bucket Name:", bucketName);
       const response = await axios.post(
-        'http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/bucket/create-bucket',
+        'http://s3-space.uniworkhub.com/api/bucket/create-bucket',
         { projectId, bucketName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -108,7 +108,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
     set({ loading: true, error: null });
     try {
       await axios.put(
-        `http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/bucket/update/${bucketId}`,
+        `http://s3-space.uniworkhub.com/api/bucket/update/${bucketId}`,
         { newBucketName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -130,7 +130,7 @@ export const useBucketStore = create<BucketStore>((set) => ({
   deleteBucket: async (bucketId, token) => {
     set({ loading: true, error: null });
     try {
-      await axios.delete(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/bucket/delete-bucket/${bucketId}`, {
+      await axios.delete(`http://s3-space.uniworkhub.com/api/bucket/delete-bucket/${bucketId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       set((state) => ({

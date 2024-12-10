@@ -25,7 +25,7 @@ export const useFileStore = create<FileStore>((set) => ({
   // Bucket ID ile AccessKey alma
   getAccessKey: async (bucketId, token: string) => {
     try {
-      const response = await axios.get(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/buckets/accessKey/${bucketId}`, {
+      const response = await axios.get(`http://s3-space.uniworkhub.com/api/files/buckets/accessKey/${bucketId}`, {
         headers: { Authorization: `Bearer ${token}` },  // Token yetkilendirme başlığıyla gönderiliyor
       });
       return response.data.accessKey;
@@ -38,7 +38,7 @@ export const useFileStore = create<FileStore>((set) => ({
   listFiles: async (accessKey, token: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/files/${accessKey}`, {
+      const response = await axios.get(`http://s3-space.uniworkhub.com/api/files/files/${accessKey}`, {
         headers: { Authorization: `Bearer ${token}` },  // Token yetkilendirme başlığı
       });
       set({ files: response.data.files, loading: false });
@@ -55,7 +55,7 @@ export const useFileStore = create<FileStore>((set) => ({
       formData.append('file', file);
       formData.append('accessKey', accessKey);
       const response = await axios.post(
-        `http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/upload`,
+        `http://s3-space.uniworkhub.com/api/files/upload`,
         formData,
         {
           headers: {
@@ -77,7 +77,7 @@ export const useFileStore = create<FileStore>((set) => ({
   deleteFile: async (fileId: string, accessKey: string, token: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.delete(`http://tkk04oksokwwgwswgg84cg4w.5.253.143.162.sslip.io/api/files/${accessKey}/${fileId}`, {
+      await axios.delete(`http://s3-space.uniworkhub.com/api/files/${accessKey}/${fileId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
