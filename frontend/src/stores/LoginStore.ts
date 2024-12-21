@@ -29,7 +29,7 @@ export const useLoginStore = create<LoginStore>((set) => ({
   login: async (email: string, password: string) => {
     try {
       // Backend'e login isteği
-      const response = await axios.post<LoginResponse>('http://s3-space.uniworkhub.com/api/auth/login', {
+      const response = await axios.post<LoginResponse>('https://s3-space.uniworkhub.com/api/auth/login', {
         UserMail: email,
         UserPassword: password,
       });

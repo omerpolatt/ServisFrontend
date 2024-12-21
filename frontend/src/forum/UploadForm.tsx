@@ -22,7 +22,7 @@ const UploadForm: React.FC<{ token: string }> = ({ token }) => {
     formData.append('file', file);  // Form verisine dosyayı ekle
 
     try {
-      const response = await axios.post('http://s3-space.uniworkhub.com/api/files/upload', formData, {
+      const response = await axios.post('https://s3-space.uniworkhub.com/api/files/upload', formData, {
         headers: {
           'Authorization': `Bearer ${token}`,  // Token'ı header'da gönderiyoruz
           'Content-Type': 'multipart/form-data',

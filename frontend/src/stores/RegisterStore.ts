@@ -29,7 +29,7 @@ export const useRegisterStore = create<AuthState>((set) => ({
 
   sendVerificationCode: async (UserMail) => {
     try {
-      await axios.post('http://s3-space.uniworkhub.com/api/auth/mailcontrol', { UserMail });
+      await axios.post('https://s3-space.uniworkhub.com/api/auth/mailcontrol', { UserMail });
       set({ verificationCodeSent: true });
     } catch (error) {
       console.error('Doğrulama kodu gönderilemedi:', error);
@@ -38,7 +38,7 @@ export const useRegisterStore = create<AuthState>((set) => ({
 
   verifyCode: async (UserMail, verificationCode) => {
     try {
-      await axios.post('http://s3-space.uniworkhub.com/api/auth/verify', { UserMail, verificationCode });
+      await axios.post('https://s3-space.uniworkhub.com/api/auth/verify', { UserMail, verificationCode });
       set({ isVerified: true });
     } catch (error) {
       console.error('Doğrulama kodu hatalı veya sistem hatası:', error);
@@ -47,7 +47,7 @@ export const useRegisterStore = create<AuthState>((set) => ({
 
   register: async (userData) => {
     try {
-      const response = await axios.post('http://s3-space.uniworkhub.com/api/auth/register', {
+      const response = await axios.post('https://s3-space.uniworkhub.com/api/auth/register', {
         UserName: userData.UserName, 
         UserMail: userData.UserMail, 
         UserPassword: userData.UserPassword

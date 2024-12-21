@@ -105,7 +105,7 @@ const BucketPage: React.FC = () => {
       name: bucket.bucketName,
       projectName: projectName || "Proje Adı Belirtilmemiş",
       accessKey: bucket.accessKey || "Erişim Anahtarı Belirtilmemiş",
-      link: "http://s3-space.uniworkhub.com/s3Space",
+      link: "https://s3-space.uniworkhub.com/s3Space",
       totalSizeMB: bucket.totalSizeMB || "0" // Toplam boyut
     });
     setIsInfoModalOpen(true);

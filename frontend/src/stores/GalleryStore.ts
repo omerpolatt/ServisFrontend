@@ -27,7 +27,7 @@ export const useGalleryStore = create<GalleryState>((set) => ({
       const token = getToken(); // Token'ı alıyoruz
 
       // Dosya yükleme isteği
-      await axios.post('http://s3-space.uniworkhub.com/api/files/upload', formData, {
+      await axios.post('https://s3-space.uniworkhub.com/api/files/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`, // Token'ı ekliyoruz
@@ -48,7 +48,7 @@ export const useGalleryStore = create<GalleryState>((set) => ({
     try {
       const token = getToken(); // Token'ı alıyoruz
 
-      const response = await axios.get('http://s3-space.uniworkhub.com/api/files', {
+      const response = await axios.get('https://s3-space.uniworkhub.com/api/files', {
         headers: {
           'Authorization': `Bearer ${token}`, // Token'ı ekliyoruz
         },
@@ -64,7 +64,7 @@ export const useGalleryStore = create<GalleryState>((set) => ({
     try {
       const token = getToken(); // Token'ı alıyoruz
 
-      await axios.delete(`http://s3-space.uniworkhub.com/api/files/${filename}`, {
+      await axios.delete(`https://s3-space.uniworkhub.com/api/files/${filename}`, {
         headers: {
           'Authorization': `Bearer ${token}`, // Token'ı ekliyoruz
         },

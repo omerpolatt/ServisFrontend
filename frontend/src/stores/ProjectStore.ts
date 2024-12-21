@@ -25,7 +25,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
     set({ loading: true });
     try {
       const response = await axios.post(
-        'http://s3-space.uniworkhub.com/api/project/create', 
+        'https://s3-space.uniworkhub.com/api/project/create', 
         { projectName },
         {
           headers: {
@@ -52,7 +52,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
   listProjects: async (token) => {
     set({ loading: true });
     try {
-      const response = await axios.get('http://s3-space.uniworkhub.com/api/project/list', {
+      const response = await axios.get('https://s3-space.uniworkhub.com/api/project/list', {
         headers: {
           Authorization: `Bearer ${token}`,  // Token ekleniyor
         },
@@ -71,7 +71,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
     set({ loading: true });
     try {
       await axios.patch(
-        `http://s3-space.uniworkhub.com/api/project/${projectId}`,
+        `https://s3-space.uniworkhub.com/api/project/${projectId}`,
         { newProjectName },
         {
           headers: {
@@ -97,7 +97,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
   deleteProject: async (projectId, token) => {
     set({ loading: true });
     try {
-      await axios.delete(`http://s3-space.uniworkhub.com/api/project/${projectId}`, {
+      await axios.delete(`https://s3-space.uniworkhub.com/api/project/${projectId}`, {
         headers: {
           Authorization: `Bearer ${token}`,  // Token ekleniyor
         },
